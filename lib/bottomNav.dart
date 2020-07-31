@@ -1,3 +1,5 @@
+import 'package:bottom_bar_page_transition/bottom_bar_page_transition.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
@@ -14,34 +16,68 @@ class BottomNav extends StatefulWidget {
 class _HomePageState extends State<BottomNav> {
   int _selectedIndex = 0;
   List _title = ["Store", "Products", "Account"];
-  PageController _pageController;
+  List info = List();
+  List filter = List();
+  List all = List();
+
+  Future<void> currentUser() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    Firestore db = Firestore.instance;
+    await auth.currentUser().then((value) {
+      db.collection('users').document(value.uid).get().then((value) {
+        setState(() {
+          info.add(value.data);
+        });
+      });
+    });
+  }
+
+  void fetchFilter() async {
+    Firestore firestore = Firestore.instance;
+    firestore.collection('shops').limit(3).snapshots().listen((value) {
+      filter = List();
+      value.documents.forEach((element) {
+        setState(() {
+          filter.add(element.data);
+        });
+      });
+    });
+  }
+
+  void fetchAll() async {
+    Firestore firestore = Firestore.instance;
+    firestore.collection('shops').snapshots().listen((value) {
+      all = List();
+      value.documents.forEach((element) {
+        setState(() {
+          all.add(element.data);
+        });
+      });
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+    currentUser();
+    fetchAll();
+    fetchFilter();
   }
 
   Widget current(int ind) {
     if (ind == 0) {
-      return HomePage();
+      return HomePage(all, filter);
     } else if (ind == 1) {
       return ProductsPage();
     } else {
-      return AccountPage();
+      return AccountPage(info);
     }
   }
 
   Widget search() {
     return IconButton(
         icon: Icon(
-          Icons.search,
+          Icons.exit_to_app,
           color: Colors.grey.shade500,
         ),
         onPressed: () {
@@ -58,8 +94,6 @@ class _HomePageState extends State<BottomNav> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _pageController.animateToPage(index,
-          duration: Duration(milliseconds: 500), curve: Curves.easeInOutCirc,);
     });
   }
 
@@ -72,17 +106,13 @@ class _HomePageState extends State<BottomNav> {
           search(),
         ],
       ),
-      body: PageView(
-        physics: BouncingScrollPhysics(),
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() => _selectedIndex = index);
-        },
-        children: <Widget>[
-          HomePage(),
-          ProductsPage(),
-          AccountPage(),
-        ],
+      body: BottomBarPageTransition(
+        builder: (context, index) => current(index),
+        currentIndex: _selectedIndex,
+        totalLength: 3,
+        transitionType: TransitionType.fade,
+        transitionDuration: Duration(milliseconds: 180),
+        transitionCurve: Curves.linear,
       ),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 0,

@@ -22,8 +22,6 @@ class _ProductsPageState extends State<ProductsPage> {
           a.add(element.data);
         });
         c = List.from(a);
-
-        print('success');
       });
     });
   }
@@ -31,8 +29,6 @@ class _ProductsPageState extends State<ProductsPage> {
   void filter({String name}) {
     setState(() {
       a = c.where((element) => element['type'] == "$name").toList();
-      print('a: $a');
-      print(c);
     });
   }
 
@@ -45,8 +41,6 @@ class _ProductsPageState extends State<ProductsPage> {
           b.add(element.data['type']);
           b = b.toSet().toList();
         });
-
-        print('success');
       });
     });
   }
@@ -58,8 +52,9 @@ class _ProductsPageState extends State<ProductsPage> {
 
   @override
   void initState() {
-    getAll();
     super.initState();
+    fetchAll();
+    myType();
   }
 
   @override
@@ -101,7 +96,7 @@ class _ProductsPageState extends State<ProductsPage> {
                   child: InkWell(
                     onTap: () {
                       myType();
-                      print(b);
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(

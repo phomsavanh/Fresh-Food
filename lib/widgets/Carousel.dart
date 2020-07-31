@@ -31,9 +31,7 @@ class Carousel extends StatelessWidget {
         return Builder(
           builder: (BuildContext context) {
             return InkWell(
-              onTap: () {
-                print(i['name']);
-              },
+              onTap: () {},
               child: Stack(
                 children: [
                   Container(

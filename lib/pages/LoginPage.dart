@@ -13,7 +13,6 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController password = TextEditingController();
   bool loading = false;
   Future<void> signIn() async {
-    print(email.text);
     FirebaseAuth auth = FirebaseAuth.instance;
     setState(() {
       this.loading = true;
@@ -50,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
           );
         },
       );
-      print('error: $e');
     });
   }
 
