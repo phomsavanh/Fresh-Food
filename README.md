@@ -22,5 +22,5 @@ samples, guidance on mobile development, and a full API reference.
   firebase_auth: ^0.16.1
   firebase_core: ^0.4.5
   carousel_slider: ^2.2.1
-  page_transition: "^1.1.6"
+  bottom_bar_page_transition: ^1.0.2
 ```
